@@ -1,0 +1,14 @@
+#!/bin/bash
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda deactivate
+
+make uninstall
+
+make install
+
+conda activate forgd_core
+
+python setup.py develop
+
+make test
