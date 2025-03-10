@@ -11,5 +11,8 @@ dependencies:
       - pytest
       - pytest-asyncio
       - pytest-mock
+      - flask
+      - flask-openapi3
+      - flask-openapi3[swagger]
 
 prefix: /opt/anaconda3/envs/condor
