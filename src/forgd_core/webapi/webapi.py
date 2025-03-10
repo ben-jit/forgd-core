@@ -40,18 +40,18 @@ class CurveTransactionRequest(BaseModel):
 
 
 curve_action_tag = Tag(
-    name="curve_tx",
-    description="Perform a buy or sell transaction on a bonding curve and get execution pricing information",
+    name="Bonding Curve Transaction",
+    description="Perform a buy or sell transaction on a curve and get the execution information",
 )
 
 
-@app.get("/curve/transaction", summary="Curve Transaction", tags=[curve_action_tag])
+@app.post("/curve/transaction", summary="Curve Transaction", tags=[curve_action_tag])
 def transaction(query: CurveTransactionRequest):
     """
     Handles a buy or sell operation on a curve
     """
     if query.curve_type != CurveType.linear:
-        return jsonify({})
+        return jsonify("err")
 
     params = BondingCurveParams(
         curve_type=BondingCurveType.from_str(query.curve_type.value)
@@ -64,6 +64,7 @@ def transaction(query: CurveTransactionRequest):
     side = OrderSide.from_str(query.action.name)
 
     req_inner = TransactionRequest(dummy_token, side, query.amount)
+
     result = curve.buy(req_inner)
     return jsonify(result)
 
@@ -75,10 +76,9 @@ class CurveStatusRequest(BaseModel):
 
 
 curve_status_tag = Tag(
-    name="curve_status",
+    name="Bonding Curve Status",
     description="Get the shape of a bonding curve for plotting and additional info",
 )
-
 
 @app.get("/curve/status", summary="Curve Status", tags=[curve_status_tag])
 def status(query: CurveStatusRequest):
