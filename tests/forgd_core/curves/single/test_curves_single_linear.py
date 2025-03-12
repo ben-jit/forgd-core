@@ -8,7 +8,8 @@ from forgd_core.common.model import BondingCurveParams, BondingCurveState, Token
 from forgd_core.common.enums import BondingCurveType, OrderSide, BondingCurveDistribution
 from forgd_core.curves.single.base import BondingCurve
 from forgd_core.curves.single.linear import LinearBondingCurve
-from forgd_core.curves.utils.linear_curve_helper import LinearCurveHelper as helper
+from forgd_core.curves.utils.common_curve_helper import CommonCurveHelper as common_helper
+from forgd_core.curves.utils.linear_curve_helper import LinearCurveHelper as linear_helper
 
 
 @pytest.fixture
@@ -264,7 +265,7 @@ def test_time_decay_no_decay():
     # Suppose helper returns exactly the same slope/intercept/timestamp
     mock_return = (Decimal("1.0"), Decimal("0.1"), old_ts)
 
-    with patch.object(helper, "apply_time_decay", return_value=mock_return) as mock_helper:
+    with patch.object(linear_helper, "apply_time_decay", return_value=mock_return) as mock_helper:
         new_i, new_m = curve._apply_time_decay()
 
     # Check the call arguments
@@ -312,7 +313,7 @@ def test_time_decay_approach1_positive():
         datetime(2025, 3, 10, 13, 0)
     )
 
-    with patch.object(helper, "apply_time_decay", return_value=mock_return) as mock_helper:
+    with patch.object(linear_helper, "apply_time_decay", return_value=mock_return) as mock_helper:
         new_i, new_m = curve._apply_time_decay()
 
     mock_helper.assert_called_once()
@@ -356,7 +357,7 @@ def test_time_decay_approach2_positive():
         datetime(2026, 1, 1, 0, 0, 0)
     )
 
-    with patch.object(helper, "apply_time_decay", return_value=mock_return) as mock_helper:
+    with patch.object(linear_helper, "apply_time_decay", return_value=mock_return) as mock_helper:
         new_i, new_m = curve._apply_time_decay()
 
     args, kwargs = mock_helper.call_args
@@ -399,7 +400,7 @@ def test_time_decay_approach_unrecognized():
         datetime(2025, 6, 2, 12, 0)  # new timestamp
     )
 
-    with patch.object(helper, "apply_time_decay", return_value=mock_return) as mock_helper:
+    with patch.object(linear_helper, "apply_time_decay", return_value=mock_return) as mock_helper:
         new_i, new_m = curve._apply_time_decay()
 
     args, kwargs = mock_helper.call_args
@@ -614,7 +615,7 @@ def test_calculate_purchase_cost_simple():
     curve = LinearBondingCurve(params, state)
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("1"), Decimal("0.1"))) as mock_decay, \
-        patch.object(helper, "cost_between", return_value=Decimal("999")) as mock_cost:
+        patch.object(linear_helper, "cost_between", return_value=Decimal("999")) as mock_cost:
         cost = curve.calculate_purchase_cost(Decimal("10"))
 
     mock_decay.assert_called_once(), "Should call _apply_time_decay once."
@@ -632,7 +633,7 @@ def test_calculate_purchase_cost_zero_amount():
     curve = LinearBondingCurve(params, state)
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("2"), Decimal("0.5"))) as mock_decay, \
-        patch.object(helper, "cost_between", return_value=Decimal("0")) as mock_cost:
+        patch.object(linear_helper, "cost_between", return_value=Decimal("0")) as mock_cost:
         cost = curve.calculate_purchase_cost(Decimal("0"))
 
     mock_decay.assert_called_once()
@@ -651,7 +652,7 @@ def test_calculate_purchase_cost_negative_amount():
     curve = LinearBondingCurve(params, state)
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("2"), Decimal("0.1"))) as mock_decay, \
-        patch.object(helper, "cost_between", return_value=Decimal("-123")) as mock_cost:
+        patch.object(linear_helper, "cost_between", return_value=Decimal("-123")) as mock_cost:
         # -50 => start=1000, end=950 => cost_between(1000,950,2,0.1).
         cost = curve.calculate_purchase_cost(Decimal("-50"))
 
@@ -669,7 +670,7 @@ def test_calculate_purchase_cost_large_amount():
     curve = LinearBondingCurve(params, state)
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("5"), Decimal("1"))) as mock_decay, \
-        patch.object(helper, "cost_between", return_value=Decimal("999999")) as mock_cost:
+        patch.object(linear_helper, "cost_between", return_value=Decimal("999999")) as mock_cost:
         cost = curve.calculate_purchase_cost(Decimal("5000"))
 
     mock_decay.assert_called_once()
@@ -686,7 +687,7 @@ def test_calculate_sale_return_normal():
     curve = _make_linear_curve_simple(Decimal("100"))
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("2"), Decimal("0.1"))) as mock_decay, \
-         patch.object(helper, "cost_between", return_value=Decimal("50")) as mock_cost:
+         patch.object(linear_helper, "cost_between", return_value=Decimal("50")) as mock_cost:
 
         sale_return = curve.calculate_sale_return(Decimal("10"))
 
@@ -707,7 +708,7 @@ def test_calculate_sale_return_zero():
     curve = _make_linear_curve_simple(Decimal("100"))
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("5"), Decimal("0.2"))) as mock_decay, \
-         patch.object(helper, "cost_between", return_value=Decimal("0")) as mock_cost:
+         patch.object(linear_helper, "cost_between", return_value=Decimal("0")) as mock_cost:
 
         sale_return = curve.calculate_sale_return(Decimal("0"))
 
@@ -725,7 +726,7 @@ def test_calculate_sale_return_full_supply():
     curve = _make_linear_curve_simple(Decimal("100"))
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("1"), Decimal("0.05"))) as mock_decay, \
-         patch.object(helper, "cost_between", return_value=Decimal("999")) as mock_cost:
+         patch.object(linear_helper, "cost_between", return_value=Decimal("999")) as mock_cost:
 
         sale_return = curve.calculate_sale_return(Decimal("100"))
 
@@ -757,7 +758,7 @@ def test_calculate_sale_return_negative_amount():
     curve = _make_linear_curve_simple(Decimal("100"))
 
     with patch.object(curve, "_apply_time_decay", return_value=(Decimal("2"), Decimal("1"))) as mock_decay, \
-         patch.object(helper, "cost_between", return_value=Decimal("-999")) as mock_cost:
+         patch.object(linear_helper, "cost_between", return_value=Decimal("-999")) as mock_cost:
 
         sale_return = curve.calculate_sale_return(Decimal("-10"))
 
@@ -818,10 +819,10 @@ def test_buy_exceeds_max_supply_pro_rata():
     )
 
     # We'll mock partial_fill to return 3. (Pretend it did some ratio.)
-    with patch.object(helper, "partial_fill", return_value=Decimal("3")) as mock_pf, \
+    with patch.object(common_helper, "partial_fill", return_value=Decimal("3")) as mock_pf, \
         patch.object(curve, "calculate_purchase_cost", return_value=Decimal("100")) as mock_calc, \
-        patch.object(helper, "apply_risk_profile", return_value=Decimal("100")) as mock_risk, \
-        patch.object(helper, "apply_transaction_fee", return_value=Decimal("102")) as mock_fee:
+        patch.object(common_helper, "apply_risk_profile", return_value=Decimal("100")) as mock_risk, \
+        patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("102")) as mock_fee:
         result = curve.buy(req)
 
     mock_pf.assert_called_once_with(Decimal("10"), Decimal("5"), approach=1)
@@ -866,8 +867,8 @@ def test_buy_risk_profile_aggressive():
     )
     # We'll mock cost & see if it gets multiplied by 0.95
     with patch.object(curve, "calculate_purchase_cost", return_value=Decimal("100")) as mock_calc, \
-        patch.object(helper, "apply_risk_profile", return_value=Decimal("95")) as mock_risk, \
-        patch.object(helper, "apply_transaction_fee", return_value=Decimal("95")) as mock_fee:
+        patch.object(common_helper, "apply_risk_profile", return_value=Decimal("95")) as mock_risk, \
+        patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("95")) as mock_fee:
         result = curve.buy(req)
 
     mock_calc.assert_called_once_with(Decimal("10"))
@@ -916,8 +917,8 @@ def test_buy_exceeds_max_liquidity_pro_rata():
     # final_amount= 10*0.8333=8.3333 => cost= 60*0.8333=50
     # We'll just mock to ensure the partial fill logic is used
     with patch.object(curve, "calculate_purchase_cost", return_value=Decimal("60")), \
-        patch.object(helper, "apply_risk_profile", return_value=Decimal("60")), \
-        patch.object(helper, "apply_transaction_fee", return_value=Decimal("50")) as mock_fee:
+        patch.object(common_helper, "apply_risk_profile", return_value=Decimal("60")), \
+        patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("50")) as mock_fee:
         result = curve.buy(req)
 
     # final_amount= 8.3333..., cost=50 => new supply= 108.3333, liquidity= 1050
@@ -1010,8 +1011,8 @@ def test_buy_slippage_partial_fill():
 
     with patch.object(curve, "calculate_purchase_cost", return_value=Decimal("110")) as mock_curve_calc, \
         patch.object(BondingCurve, "calculate_purchase_cost", return_value=Decimal("100")) as mock_parent_calc, \
-        patch.object(helper, "scale_for_slippage", return_value=(Decimal("105"), False)) as mock_scale, \
-        patch.object(helper, "apply_transaction_fee", return_value=Decimal("106")) as mock_fee:
+        patch.object(common_helper, "scale_for_slippage", return_value=(Decimal("105"), False)) as mock_scale, \
+        patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("106")) as mock_fee:
         result = curve.buy(req)
 
     # raw_cost = 110
@@ -1046,8 +1047,8 @@ def test_buy_transaction_fee():
 
     # We'll mock intermediate steps => raw_cost=100 => apply_risk_profile=100 => transaction_fee => 102
     with patch.object(curve, "calculate_purchase_cost", return_value=Decimal("100")) as mock_calc, \
-        patch.object(helper, "apply_risk_profile", return_value=Decimal("100")) as mock_risk, \
-        patch.object(helper, "apply_transaction_fee", return_value=Decimal("102")) as mock_fee:
+        patch.object(common_helper, "apply_risk_profile", return_value=Decimal("100")) as mock_risk, \
+        patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("102")) as mock_fee:
         result = curve.buy(req)
 
     assert result.executed_amount == Decimal("5")
@@ -1123,8 +1124,8 @@ def test_sell_sufficient_liquidity():
     )
 
     with patch.object(curve, "calculate_sale_return", return_value=Decimal("50")) as mock_calc, \
-         patch.object(helper, "apply_risk_profile", return_value=Decimal("50")) as mock_risk, \
-         patch.object(helper, "apply_transaction_fee", return_value=Decimal("49")) as mock_fee:
+         patch.object(common_helper, "apply_risk_profile", return_value=Decimal("50")) as mock_risk, \
+         patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("49")) as mock_fee:
 
         result = curve.sell(req)
 
@@ -1174,8 +1175,8 @@ def test_sell_insufficient_liquidity_pro_rata():
     # raw_return=50 => user can't get 50, only 40 => fraction= 40/50=0.8
     # => final_amount= 10*0.8=8 => raw_return=40 => then fees? We'll just mock
     with patch.object(curve, "calculate_sale_return", return_value=Decimal("50")) as mock_calc, \
-         patch.object(helper, "apply_risk_profile", return_value=Decimal("50")) as mock_risk, \
-         patch.object(helper, "apply_transaction_fee", return_value=Decimal("39")) as mock_fee:
+         patch.object(common_helper, "apply_risk_profile", return_value=Decimal("50")) as mock_risk, \
+         patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("39")) as mock_fee:
 
         result = curve.sell(req)
 
@@ -1200,8 +1201,8 @@ def test_sell_risk_profile_conservative():
     )
 
     with patch.object(curve, "calculate_sale_return", return_value=Decimal("100")) as mock_calc, \
-         patch.object(helper, "apply_risk_profile", return_value=Decimal("85")) as mock_risk, \
-         patch.object(helper, "apply_transaction_fee", return_value=Decimal("83")) as mock_fee:
+         patch.object(common_helper, "apply_risk_profile", return_value=Decimal("85")) as mock_risk, \
+         patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("83")) as mock_fee:
 
         result = curve.sell(req)
 
@@ -1254,8 +1255,8 @@ def test_sell_slippage_partial_fill():
     # parent => baseline=100 => threshold=95 => 80<95 => partial fill => scale_for_slippage =>(90,False)
     with patch.object(curve, "calculate_sale_return", return_value=Decimal("80")) as mock_child, \
          patch.object(BondingCurve, "calculate_sale_return", return_value=Decimal("100")) as mock_parent, \
-         patch.object(helper, "scale_for_slippage", return_value=(Decimal("90"), False)) as mock_scale, \
-         patch.object(helper, "apply_transaction_fee", return_value=Decimal("88")) as mock_fee:
+         patch.object(common_helper, "scale_for_slippage", return_value=(Decimal("90"), False)) as mock_scale, \
+         patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("88")) as mock_fee:
 
         result = curve.sell(req)
 
@@ -1285,8 +1286,8 @@ def test_sell_transaction_fee():
 
     # Suppose raw_return=100 => risk_profile=100 => fee => 98
     with patch.object(curve, "calculate_sale_return", return_value=Decimal("100")) as mock_calc, \
-         patch.object(helper, "apply_risk_profile", return_value=Decimal("100")) as mock_risk, \
-         patch.object(helper, "apply_transaction_fee", return_value=Decimal("98")) as mock_fee:
+         patch.object(common_helper, "apply_risk_profile", return_value=Decimal("100")) as mock_risk, \
+         patch.object(common_helper, "apply_transaction_fee", return_value=Decimal("98")) as mock_fee:
 
         result = curve.sell(req)
 

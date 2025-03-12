@@ -107,3 +107,15 @@ class SimulationResult:
     average_purchase_price: Optional[Decimal] = Decimal('0.0')
     average_sale_price: Optional[Decimal] = Decimal('0.0')
     metadata: Dict = field(default_factory=dict)
+
+
+@dataclass
+class StepConfig:
+    """
+    Describes a single tier in a stepwise curve:
+      - supply_threshold: up to (but not including) this supply => use this price
+    For example, [0... supply_threshold) has price = price.
+    Next step picks up from supply_threshold onward.
+    """
+    supply_threshold: Decimal
+    price: Decimal

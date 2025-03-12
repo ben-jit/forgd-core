@@ -10,7 +10,8 @@ from forgd_core.common.model import (
     TransactionRequest
 )
 from forgd_core.curves.single.base import BondingCurve
-from forgd_core.curves.utils.linear_curve_helper import LinearCurveHelper as helper
+from forgd_core.curves.utils.common_curve_helper import CommonCurveHelper as common_helper
+from forgd_core.curves.utils.linear_curve_helper import LinearCurveHelper as linear_helper
 
 
 class LinearBondingCurve(BondingCurve):
@@ -75,7 +76,7 @@ class LinearBondingCurve(BondingCurve):
         current_m = self.params.slope
         last_ts = self._state.last_timestamp
 
-        new_i, new_m, new_ts = helper.apply_time_decay(
+        new_i, new_m, new_ts = linear_helper.apply_time_decay(
             current_i,
             current_m,
             last_ts,
@@ -122,7 +123,7 @@ class LinearBondingCurve(BondingCurve):
         i, m = self._apply_time_decay()
         start_supply = self._state.current_supply
         end_supply = start_supply + amount
-        return helper.cost_between(start_supply, end_supply, i, m)
+        return linear_helper.cost_between(start_supply, end_supply, i, m)
 
     def calculate_sale_return(self, amount: Decimal) -> Decimal:
         """
@@ -134,7 +135,7 @@ class LinearBondingCurve(BondingCurve):
         i, m = self._apply_time_decay()
         start_supply = self._state.current_supply - amount
         end_supply = self._state.current_supply
-        return helper.cost_between(start_supply, end_supply, i, m)
+        return linear_helper.cost_between(start_supply, end_supply, i, m)
 
     def buy(self, request: TransactionRequest) -> TransactionResult:
         """
@@ -167,7 +168,7 @@ class LinearBondingCurve(BondingCurve):
                     raise ValueError("Max supply reached; cannot buy more tokens.")
             elif original_amount > remaining:
                 if self.options["pro_rata"]:
-                    final_amount = helper.partial_fill(
+                    final_amount = common_helper.partial_fill(
                         original_amount,
                         remaining,
                         approach=self.options["partial_fill_approach"]
@@ -189,7 +190,7 @@ class LinearBondingCurve(BondingCurve):
         raw_cost = self.calculate_purchase_cost(final_amount)
 
         # 3) Apply risk profile (mark up the cost if "conservative", discount if "aggressive", etc.)
-        raw_cost = helper.apply_risk_profile(
+        raw_cost = common_helper.apply_risk_profile(
             raw_cost,
             self.options["risk_profile"],
             is_buy=True
@@ -214,7 +215,7 @@ class LinearBondingCurve(BondingCurve):
         if slip > 0:
             # For demonstration, let's define "expected_cost" as cost without the risk markup:
             baseline_cost = super().calculate_purchase_cost(final_amount)
-            final_cost, revert_flag = helper.scale_for_slippage(
+            final_cost, revert_flag = common_helper.scale_for_slippage(
                 raw_cost,
                 baseline_cost,
                 slip,
@@ -226,7 +227,7 @@ class LinearBondingCurve(BondingCurve):
             raw_cost = final_cost
 
         # 6) Transaction fee
-        final_cost = helper.apply_transaction_fee(
+        final_cost = common_helper.apply_transaction_fee(
             raw_cost,
             self.options["txn_fee_rate"],
             is_buy=True
@@ -263,7 +264,7 @@ class LinearBondingCurve(BondingCurve):
         raw_return = self.calculate_sale_return(final_amount)
 
         # 1) Apply risk profile (often a discount for conservative sellers, etc.)
-        raw_return = helper.apply_risk_profile(
+        raw_return = common_helper.apply_risk_profile(
             raw_return,
             self.options["risk_profile"],
             is_buy=False
@@ -284,7 +285,7 @@ class LinearBondingCurve(BondingCurve):
         if slip > 0:
             # baseline_return ignoring risk markup
             baseline_ret = super().calculate_sale_return(final_amount)
-            final_ret, revert_flag = helper.scale_for_slippage(
+            final_ret, revert_flag = common_helper.scale_for_slippage(
                 raw_return,
                 baseline_ret,
                 slip,
@@ -296,7 +297,7 @@ class LinearBondingCurve(BondingCurve):
             raw_return = final_ret
 
         # 4) Transaction fees (subtract from user proceeds)
-        final_return = helper.apply_transaction_fee(
+        final_return = common_helper.apply_transaction_fee(
             raw_return,
             self.options["txn_fee_rate"],
             is_buy=False
