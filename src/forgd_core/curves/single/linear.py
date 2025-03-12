@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Tuple
 
 
 from forgd_core.common.model import (
@@ -64,7 +64,7 @@ class LinearBondingCurve(BondingCurve):
                     self.options["custom"] = {}
                 self.options["custom"][k] = v
 
-    def _apply_time_decay(self) -> (Decimal, Decimal):
+    def _apply_time_decay(self) -> Tuple[Decimal, Decimal]:
         """
         Retrieves current i, m from params, then calls helper to apply time decay.
         Updates state.last_timestamp as needed.

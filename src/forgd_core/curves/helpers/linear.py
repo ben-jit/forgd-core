@@ -1,5 +1,6 @@
 from decimal import Decimal
 from datetime import datetime
+from typing import Tuple, Union, Any
 
 
 class LinearCurveHelper:
@@ -20,7 +21,7 @@ class LinearCurveHelper:
         last_timestamp: datetime,
         time_decay_rate: Decimal,
         approach: int = 1,
-    ) -> (Decimal, Decimal, datetime):
+    ) -> Tuple[Decimal, Decimal, datetime]:
         """
         Adjusts 'current_i' (initial_price) or 'current_m' (slope) based on time decay,
         if 'time_decay_rate' != 0. Returns (new_i, new_m, new_timestamp).
