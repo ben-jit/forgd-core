@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 from forgd_core.common.model import StepConfig
-from forgd_core.curves.utils.stepwise_curve_helper import StepwiseCurveHelper
+from forgd_core.curves.helpers.stepwise import StepwiseCurveHelper
 
 
 @pytest.fixture
@@ -107,7 +107,7 @@ def test_apply_time_decay_to_steps_no_elapsed_time(monkeypatch, sample_steps):
         def now(cls):
             return fixed_now
 
-    monkeypatch.setattr("forgd_core.curves.utils.stepwise_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.stepwise.datetime", MockDateTime)
 
     result_steps, new_ts = StepwiseCurveHelper.apply_time_decay_to_steps(
         steps=sample_steps,
@@ -132,7 +132,7 @@ def test_apply_time_decay_to_steps_zero_rate(monkeypatch, sample_steps):
         def now(cls):
             return new_ts
 
-    monkeypatch.setattr("forgd_core.curves.utils.stepwise_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.stepwise.datetime", MockDateTime)
 
     result_steps, updated_ts = StepwiseCurveHelper.apply_time_decay_to_steps(
         steps=sample_steps,
@@ -157,7 +157,7 @@ def test_apply_time_decay_to_steps_approach_1_positive(monkeypatch, sample_steps
         def now(cls):
             return new_ts
 
-    monkeypatch.setattr("forgd_core.curves.utils.stepwise_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.stepwise.datetime", MockDateTime)
 
     # time_decay_rate=0.1 => additional_factor= 2 * 0.1=0.2 => multiplier=1.2
     result_steps, updated_ts = StepwiseCurveHelper.apply_time_decay_to_steps(
@@ -188,7 +188,7 @@ def test_apply_time_decay_to_steps_approach_2_positive(monkeypatch, sample_steps
         def now(cls):
             return new_ts
 
-    monkeypatch.setattr("forgd_core.curves.utils.stepwise_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.stepwise.datetime", MockDateTime)
 
     # time_decay_rate=0.1 => add= 3 * 0.1=0.3
     result_steps, updated_ts = StepwiseCurveHelper.apply_time_decay_to_steps(
@@ -218,7 +218,7 @@ def test_apply_time_decay_to_steps_unknown_approach(monkeypatch, sample_steps):
         def now(cls):
             return new_ts
 
-    monkeypatch.setattr("forgd_core.curves.utils.stepwise_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.stepwise.datetime", MockDateTime)
 
     result_steps, updated_ts = StepwiseCurveHelper.apply_time_decay_to_steps(
         steps=sample_steps,
@@ -247,7 +247,7 @@ def test_apply_time_decay_to_steps_negative_elapsed(monkeypatch, sample_steps):
         def now(cls):
             return new_ts
 
-    monkeypatch.setattr("forgd_core.curves.utils.stepwise_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.stepwise.datetime", MockDateTime)
 
     result_steps, updated_ts = StepwiseCurveHelper.apply_time_decay_to_steps(
         steps=sample_steps,
@@ -273,7 +273,7 @@ def test_apply_time_decay_to_steps_negative_rate(monkeypatch, sample_steps):
         def now(cls):
             return new_ts
 
-    monkeypatch.setattr("forgd_core.curves.utils.stepwise_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.stepwise.datetime", MockDateTime)
 
     # time_decay_rate=-0.05 => approach=1 => factor= 2 * -0.05= -0.1 => multiplier=0.9 => price*0.9
     result_steps, updated_ts = StepwiseCurveHelper.apply_time_decay_to_steps(

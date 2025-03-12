@@ -3,9 +3,8 @@ import pytest
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from forgd_core.common.enums import BondingCurveDistribution
 from forgd_core.common.math import decimal_approx_equal
-from forgd_core.curves.utils.linear_curve_helper import LinearCurveHelper
+from forgd_core.curves.helpers.linear import LinearCurveHelper
 
 
 @pytest.mark.parametrize(
@@ -94,7 +93,7 @@ def test_apply_time_decay_approach_1_positive(monkeypatch):
         def now(cls):
             return fixed_now
 
-    monkeypatch.setattr("forgd_core.curves.utils.linear_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.linear.datetime", MockDateTime)
 
     last_timestamp = fixed_now - timedelta(days=2)  # 2 days earlier
     elapsed_days = Decimal("2")
@@ -126,7 +125,7 @@ def test_apply_time_decay_approach_2_positive(monkeypatch):
         def now(cls):
             return fixed_now
 
-    monkeypatch.setattr("forgd_core.curves.utils.linear_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.linear.datetime", MockDateTime)
 
     last_timestamp = fixed_now - timedelta(days=3)  # 3 days earlier
     elapsed_days = Decimal("3")
@@ -160,7 +159,7 @@ def test_apply_time_decay_approach_default(monkeypatch):
         def now(cls):
             return fixed_now
 
-    monkeypatch.setattr("forgd_core.curves.utils.linear_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.linear.datetime", MockDateTime)
 
     last_timestamp = fixed_now - timedelta(days=2)
 
@@ -190,7 +189,7 @@ def test_apply_time_decay_zero_elapsed(monkeypatch):
         def now(cls):
             return fixed_now
 
-    monkeypatch.setattr("forgd_core.curves.utils.linear_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.linear.datetime", MockDateTime)
 
     # No time has passed
     last_timestamp = fixed_now
@@ -219,7 +218,7 @@ def test_apply_time_decay_negative_rate(monkeypatch):
         def now(cls):
             return fixed_now
 
-    monkeypatch.setattr("forgd_core.curves.utils.linear_curve_helper.datetime", MockDateTime)
+    monkeypatch.setattr("forgd_core.curves.helpers.linear.datetime", MockDateTime)
 
     last_timestamp = fixed_now - timedelta(days=1)
     elapsed_days = Decimal("1")

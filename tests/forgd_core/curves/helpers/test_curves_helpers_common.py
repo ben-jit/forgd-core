@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from forgd_core.common.enums import BondingCurveDistribution
 from forgd_core.common.math import decimal_approx_equal
-from forgd_core.curves.utils.common_curve_helper import CommonCurveHelper
+from forgd_core.curves.helpers.common import CommonCurveHelper
 
 
 @pytest.mark.parametrize(

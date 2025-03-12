@@ -10,8 +10,8 @@ from forgd_core.common.model import (
     TransactionRequest
 )
 from forgd_core.curves.single.base import BondingCurve
-from forgd_core.curves.utils.common_curve_helper import CommonCurveHelper as common_helper
-from forgd_core.curves.utils.linear_curve_helper import LinearCurveHelper as linear_helper
+from forgd_core.curves.helpers.common import CommonCurveHelper as common_helper
+from forgd_core.curves.helpers.linear import LinearCurveHelper as linear_helper
 
 
 class LinearBondingCurve(BondingCurve):

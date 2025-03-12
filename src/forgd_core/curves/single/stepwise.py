@@ -10,8 +10,8 @@ from forgd_core.common.model import (
     StepConfig
 )
 from forgd_core.curves.single.base import BondingCurve
-from forgd_core.curves.utils.common_curve_helper import CommonCurveHelper as common_helper
-from forgd_core.curves.utils.stepwise_curve_helper import StepwiseCurveHelper as stepwise_helper
+from forgd_core.curves.helpers.common import CommonCurveHelper as common_helper
+from forgd_core.curves.helpers.stepwise import StepwiseCurveHelper as stepwise_helper
 
 
 class StepwiseCurve(BondingCurve):
