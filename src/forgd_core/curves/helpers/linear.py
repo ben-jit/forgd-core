@@ -1,6 +1,6 @@
 from decimal import Decimal
 from datetime import datetime
-from typing import Tuple, Union, Any
+from typing import Tuple
 
 
 class LinearCurveHelper:

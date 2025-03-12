@@ -1,13 +1,12 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Optional
 
 from forgd_core.common.model import (
     BondingCurveState,
     BondingCurveParams,
     TransactionRequest,
     TransactionResult,
-    StepConfig
 )
 from forgd_core.curves.single.base import BondingCurve
 from forgd_core.curves.helpers.common import CommonCurveHelper as common_helper

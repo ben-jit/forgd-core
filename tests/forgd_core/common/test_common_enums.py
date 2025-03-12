@@ -1,4 +1,5 @@
 import pytest
+
 from forgd_core.common.enums import (
     ChainType,
     BondingCurveType,
