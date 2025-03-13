@@ -13,7 +13,7 @@ from forgd_core.curves.helpers.common import CommonCurveHelper as common_helper
 from forgd_core.curves.helpers.stepwise import StepwiseCurveHelper as stepwise_helper
 
 
-class StepwiseCurve(BondingCurve):
+class StepwiseBondingCurve(BondingCurve):
     """
     A stepwise bonding curve with multiple discrete tiers. Each tier has a range of
     supply [prev_threshold ... supply_threshold) at a constant price. If a buy or sell
