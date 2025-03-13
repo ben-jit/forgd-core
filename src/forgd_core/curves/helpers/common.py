@@ -91,7 +91,7 @@ class CommonCurveHelper:
     @staticmethod
     def apply_risk_profile(
         raw_value: Decimal,
-        risk_profile: Optional[BondingCurveDistribution] = None,
+        risk_profile: Optional['BondingCurveDistribution'] = None,
         is_buy: bool = True,
     ) -> Decimal:
         """

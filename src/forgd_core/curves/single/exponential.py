@@ -189,7 +189,7 @@ class ExponentialBondingCurve(BondingCurve):
             max_price=self.options["max_price"]
         )
 
-    def buy(self, request: TransactionRequest) -> TransactionResult:
+    def buy(self, request: 'TransactionRequest') -> 'TransactionResult':
         """
         Executes a buy operation, referencing the exponential integral for cost,
         plus partial fill, slippage tolerance, risk profile, fees, etc.
@@ -297,7 +297,7 @@ class ExponentialBondingCurve(BondingCurve):
             timestamp=datetime.now()
         )
 
-    def sell(self, request: TransactionRequest) -> TransactionResult:
+    def sell(self, request: 'TransactionRequest') -> 'TransactionResult':
         """
         Executes a sell operation, referencing the exponential integral for return,
         plus partial fill, slippage, risk, fees, etc.

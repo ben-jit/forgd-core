@@ -163,7 +163,7 @@ class StepwiseCurve(BondingCurve):
         )
         return ret
 
-    def buy(self, request: TransactionRequest) -> TransactionResult:
+    def buy(self, request: 'TransactionRequest') -> 'TransactionResult':
         """
         Buys 'request.amount' tokens, referencing stepwise tiers for the cost,
         then applying risk profile, fees, slippage, partial fills, etc.
@@ -269,7 +269,7 @@ class StepwiseCurve(BondingCurve):
             timestamp=datetime.now()
         )
 
-    def sell(self, request: TransactionRequest) -> TransactionResult:
+    def sell(self, request: 'TransactionRequest') -> 'TransactionResult':
         """
         Sells 'request.amount' tokens using stepwise tiers, then applies risk profile,
         partial fills, fees, slippage, etc.
