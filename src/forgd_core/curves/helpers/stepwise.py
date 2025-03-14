@@ -17,7 +17,7 @@ class StepwiseCurveHelper:
     """
 
     @staticmethod
-    def validate_and_sort_steps(steps: List[StepConfig]) -> List[StepConfig]:
+    def validate_and_sort_steps(steps: List['StepConfig']) -> List['StepConfig']:
         """
         Sorts the given list of StepConfig by ascending supply_threshold
         and validates that each threshold is strictly greater than the previous.
@@ -49,11 +49,11 @@ class StepwiseCurveHelper:
 
     @staticmethod
     def apply_time_decay_to_steps(
-        steps: List[StepConfig],
+        steps: List['StepConfig'],
         last_timestamp: datetime,
         time_decay_rate: Decimal,
         approach: int = 1
-    ) -> (List[StepConfig], datetime):
+    ) -> (List['StepConfig'], datetime):
         """
         Adjusts each tier's price based on how much time has elapsed since last_timestamp.
         Example approaches:
@@ -95,7 +95,7 @@ class StepwiseCurveHelper:
     def stepwise_cost_for_purchase(
         current_supply: Decimal,
         amount: Decimal,
-        steps: List[StepConfig],
+        steps: List['StepConfig'],
         allow_partial_fill: bool = True
     ) -> Decimal:
         """
@@ -171,7 +171,7 @@ class StepwiseCurveHelper:
     def stepwise_return_for_sale(
         current_supply: Decimal,
         amount: Decimal,
-        steps: List[StepConfig],
+        steps: List['StepConfig'],
         allow_partial_fill: bool = True
     ) -> Decimal:
         """

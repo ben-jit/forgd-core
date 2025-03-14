@@ -10,7 +10,7 @@ from forgd_core.common.model import (
     BondingCurveState,
     StepConfig, Token, Liquidity, TransactionRequest
 )
-from forgd_core.curves.single.stepwise import StepwiseCurve
+from forgd_core.curves.single.stepwise import StepwiseBondingCurve
 from forgd_core.curves.helpers.common import CommonCurveHelper as common_helper
 from forgd_core.curves.helpers.stepwise import StepwiseCurveHelper as stepwise_helper
 
@@ -47,7 +47,7 @@ def stepwise_curve():
         last_timestamp=datetime(2025, 1, 1, 12, 0, 0)
     )
     # Provide steps directly to the constructor
-    curve = StepwiseCurve(params, state=state, steps=params.steps, time_decay_rate=Decimal("0.0"))
+    curve = StepwiseBondingCurve(params, state=state, steps=params.steps, time_decay_rate=Decimal("0.0"))
     return curve
 
 
@@ -70,7 +70,7 @@ def stepwise_curve_with_liquidity():
         current_price=Decimal("2"),
         liquidity=liquidity
     )
-    curve = StepwiseCurve(params=params, state=state, steps=[])
+    curve = StepwiseBondingCurve(params=params, state=state, steps=[])
     return curve
 
 
@@ -91,7 +91,7 @@ def stepwise_curve_no_liquidity():
         current_price=Decimal("2"),
         liquidity=None
     )
-    curve = StepwiseCurve(params=params, state=state, steps=[])
+    curve = StepwiseBondingCurve(params=params, state=state, steps=[])
     return curve
 
 
@@ -115,7 +115,7 @@ def stepwise_curve_with_tiers():
         steps=steps
     )
 
-    curve = StepwiseCurve(params=params, state=state)
+    curve = StepwiseBondingCurve(params=params, state=state)
     return curve
 
 
@@ -124,7 +124,7 @@ def test_init_no_state(basic_params):
     If no state is passed, StepwiseCurve should create a default BondingCurveState.
     Also sets self._state.last_timestamp to now if it was None.
     """
-    curve = StepwiseCurve(params=basic_params, state=None, steps=[])
+    curve = StepwiseBondingCurve(params=basic_params, state=None, steps=[])
     assert curve._state is not None, "A default BondingCurveState should be created if none is passed."
     assert curve._state.last_timestamp is not None, "last_timestamp should be set if it was None."
 
@@ -141,7 +141,7 @@ def test_init_with_state_no_timestamp(basic_params):
         mock_dt.now.return_value = mock_now
 
         custom_state = BondingCurveState(current_supply=Decimal("100"))
-        curve = StepwiseCurve(params=basic_params, state=custom_state, steps=[])
+        curve = StepwiseBondingCurve(params=basic_params, state=custom_state, steps=[])
 
         assert curve._state is custom_state, "Should keep the same state object."
         assert curve._state.last_timestamp == mock_now, "Should set last_timestamp to mocked now() if it was None."
@@ -157,7 +157,7 @@ def test_init_with_state_existing_timestamp(basic_params):
         current_price=Decimal("2.0"),
         last_timestamp=existing_ts
     )
-    curve = StepwiseCurve(params=basic_params, state=custom_state, steps=[])
+    curve = StepwiseBondingCurve(params=basic_params, state=custom_state, steps=[])
     assert curve._state.last_timestamp == existing_ts, (
         "Should not overwrite an existing last_timestamp."
     )
@@ -167,7 +167,7 @@ def test_default_options(basic_params):
     """
     Verify the default options are set correctly if no overrides are provided.
     """
-    curve = StepwiseCurve(params=basic_params, steps=[])
+    curve = StepwiseBondingCurve(params=basic_params, steps=[])
     # Check default values from the constructor
     assert curve.options["allow_buy"] is True
     assert curve.options["allow_sell"] is True
@@ -187,7 +187,7 @@ def test_init_with_options_overrides(basic_params):
     If recognized kwargs are passed, they override the default options.
     If unrecognized kwargs are passed, they go into self.custom_options.
     """
-    curve = StepwiseCurve(
+    curve = StepwiseBondingCurve(
         params=basic_params,
         steps=[],
         allow_buy=False,
@@ -209,7 +209,7 @@ def test_init_with_steps(basic_params):
     """
     # We'll mock the helper to ensure it's called
     with patch.object(stepwise_helper, "validate_and_sort_steps", return_value=["mocked_result"]) as mock_validate:
-        curve = StepwiseCurve(params=basic_params)
+        curve = StepwiseBondingCurve(params=basic_params)
     # validate_and_sort_steps should be called with steps_input
     mock_validate.assert_called_once_with(basic_params.steps)
     # and curve._steps should store the result
@@ -226,7 +226,7 @@ def test_init_with_invalid_steps_raises(basic_params):
     ]
     with patch.object(stepwise_helper, "validate_and_sort_steps", side_effect=ValueError("Invalid tiers")):
         with pytest.raises(ValueError, match="Invalid tiers"):
-            StepwiseCurve(params=basic_params, steps=invalid_steps)
+            StepwiseBondingCurve(params=basic_params, steps=invalid_steps)
 
 
 def test_apply_time_decay_to_steps_no_decay(stepwise_curve):

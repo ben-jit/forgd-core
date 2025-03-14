@@ -137,7 +137,7 @@ class LinearBondingCurve(BondingCurve):
         end_supply = self._state.current_supply
         return linear_helper.cost_between(start_supply, end_supply, i, m)
 
-    def buy(self, request: TransactionRequest) -> TransactionResult:
+    def buy(self, request: 'TransactionRequest') -> 'TransactionResult':
         """
         Buys 'request.amount' tokens, respecting:
           - allow_buy
@@ -245,7 +245,7 @@ class LinearBondingCurve(BondingCurve):
             timestamp=datetime.now()
         )
 
-    def sell(self, request: TransactionRequest) -> TransactionResult:
+    def sell(self, request: 'TransactionRequest') -> 'TransactionResult':
         """
         Sells 'request.amount' tokens, respecting:
           - allow_sell
